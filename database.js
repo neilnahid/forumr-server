@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 export default () => {
   mongoose
-    .connect('mongodb://localhost:27017/forumr', {
+    .connect(process.env.CONNECTION_STRING, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })

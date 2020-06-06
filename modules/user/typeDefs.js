@@ -5,6 +5,7 @@ export default gql`
     id: ID!
     email: String!
     password: String!
+    token: String
   }
   type Query {
     users: [User]

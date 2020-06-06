@@ -7,6 +7,7 @@ const UserSchema = new Schema({
     type: Types.ObjectId,
     ref: 'Profile',
   },
+  token: String,
 });
 
 export const User = model('User', UserSchema);

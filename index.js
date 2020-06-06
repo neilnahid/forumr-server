@@ -2,6 +2,8 @@ import Koa from 'koa';
 import { ApolloServer, gql } from 'apollo-server-koa';
 import GraphQLModule from './modules/main';
 import DB from './database';
+require("dotenv").config();
+
 const server = new ApolloServer({
   schema: GraphQLModule.schema,
   typeDefs: GraphQLModule.typeDefs,
