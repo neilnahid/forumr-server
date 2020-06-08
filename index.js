@@ -1,19 +1,13 @@
+import "dotenv/config";
 import Koa from 'koa';
-import { ApolloServer, gql } from 'apollo-server-koa';
 import GraphQLModule from './modules/main';
-import DB from './database';
-require("dotenv").config();
+import connectDB from './database';
+import { server } from "./apolloServer";
 
-const server = new ApolloServer({
-  schema: GraphQLModule.schema,
-  typeDefs: GraphQLModule.typeDefs,
-});
 
-DB();
+connectDB();
 const app = new Koa();
-
-server.applyMiddleware({ app });
-
 app.listen(3000, () => {
   console.log('listening to port 3000');
 });
+server.applyMiddleware({ app, cors: { origin: process.env.CLIENT_URL, credentials: true } });

@@ -4,4 +4,4 @@ export default gql`
   type Query{
     authenticate(email: String!, password: String!): User
   }
-`
+`;
