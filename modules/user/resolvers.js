@@ -1,4 +1,4 @@
-import { hash } from 'bcrypt';
+import { hash, genSaltSync } from 'bcrypt';
 import { User } from '../../models/models';
 
 export default {
@@ -9,7 +9,10 @@ export default {
     addUser: async (root, args) => {
       // TODO: validation
       const user = new User(args);
-      user.password = await hash(user.password, process.env.SALT);
+      user.password = await hash(
+        user.password,
+        genSaltSync(process.env.SALT_ROUNDS),
+      );
       await user.save();
       return user;
     },

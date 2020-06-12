@@ -8,8 +8,9 @@ export default {
   Query: {
     authenticate: async (parent, { email, password }, { ctx }) => {
       const user = await User.findOne({ email });
-      if (!user) { throw new Error('user does not exist'); }
-      if (!compare(password, user.password)) { throw new Error('invalid password'); }
+      if (user == null) { throw new Error('user does not exist'); }
+      const isPasswordValid = await compare(password, user.password);
+      if (!isPasswordValid) { throw new Error('invalid password'); }
       const refreshToken = createRefreshToken(user);
       const accessToken = createAccessToken(user);
       user.token = accessToken;
