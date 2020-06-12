@@ -7,8 +7,6 @@ export default new GraphQLModule({
   typeDefs,
   resolvers,
   imports: [UserModule],
-  context: (a, b, c) => a
-  // console.log(b);
-  // console.log(c);
+  context: (ctx) => ctx
   ,
 });

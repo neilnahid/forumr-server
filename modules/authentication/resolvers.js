@@ -1,29 +1,41 @@
+import { compare } from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { Error } from 'mongoose';
 import { User } from '../../models/models';
-import { compare } from "bcrypt";
+import { createRefreshToken, createAccessToken } from '../../utils/generateToken';
 
-const generateAccessToken = (payload) => {
-  return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: '30min',
-  });
-}
-const generateRefreshToken = (payload) => {
-  return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: '7d',
-  })
-}
 export default {
   Query: {
     authenticate: async (parent, { email, password }, { ctx }) => {
-      const user = await User.find(email);
-      if (!user)
-        throw new Error("user does not exist");
-      if (!compare(password, user.password))
-        throw new Error("invalid password");
-      return {
-        accessToken: generateAccessToken(user),
-        refreshToken: generateRefreshToken(user)
+      const user = await User.findOne({ email });
+      if (!user) { throw new Error('user does not exist'); }
+      if (!compare(password, user.password)) { throw new Error('invalid password'); }
+      const refreshToken = createRefreshToken(user);
+      const accessToken = createAccessToken(user);
+      user.token = accessToken;
+      ctx.cookies.set('refresh_token', refreshToken, {
+        httpOnly: true,
+      });
+      return user.save();
+    },
+    refreshToken: async (parent, { refreshToken }, { ctx }) => {
+      const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+      let user = await User.findById(payload.id);
+
+      if (!user) {
+        throw new Error('user does not exist');
       }
+      const newRefreshToken = createRefreshToken(user);
+      const newAccessToken = createAccessToken(user);
+      user.token = refreshToken;
+      user = await user.save();
+      ctx.cookies.set('refresh_token', newRefreshToken, {
+        httpOnly: true,
+      });
+      return {
+        refreshToken: newRefreshToken,
+        accessToken: newAccessToken,
+      };
     },
   },
 };
