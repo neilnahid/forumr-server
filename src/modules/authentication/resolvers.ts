@@ -4,6 +4,11 @@ import { Error } from 'mongoose';
 import { User } from '../../models/models';
 import { createRefreshToken, createAccessToken } from '../../utils/generateToken';
 
+interface DecodedObject{
+  id: string,
+  email: string
+}
+
 export default {
   Query: {
     authenticate: async (parent, { email, password }, { ctx }) => {
@@ -20,7 +25,7 @@ export default {
       return user.save();
     },
     refreshToken: async (parent, { refreshToken }, { ctx }) => {
-      const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+      const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!) as DecodedObject;
       let user = await User.findById(payload.id);
 
       if (!user) {

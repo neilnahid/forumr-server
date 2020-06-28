@@ -1,7 +1,7 @@
 import { gql } from 'apollo-server-koa';
 
 export default gql`
-  type Query {
+  extend type Query {
     profiles: [Profile]
   }
   type Profile {
@@ -13,7 +13,7 @@ export default gql`
   extend type User {
     profile: Profile
   }
-  type Mutation {
+  extend type Mutation {
     """
     add a new profile with reference to user
     """

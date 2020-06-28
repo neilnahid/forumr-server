@@ -11,7 +11,7 @@ export default {
       const user = new User(args);
       user.password = await hash(
         user.password,
-        genSaltSync(process.env.SALT_ROUNDS),
+        genSaltSync(parseInt(process.env.SALT_ROUNDS!, 10)),
       );
       await user.save();
       return user;
